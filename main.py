@@ -51,9 +51,9 @@ while True:
                     closed+=1
         i+=2
     if(closed/i > 0.9):
-        playSong()
+        playSong(True)
     else:
-        stopSong
+        playSong(False)
 
     key = cv.waitKey(1) & 0xFF
     if key == ord('q'):
