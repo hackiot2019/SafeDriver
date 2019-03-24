@@ -75,6 +75,8 @@ while(True):
             # now we find the biggest blob and get the centriod
 
             threshold = cv2.inRange(pupilFrame, 250, 255)  # get the blobs
+            ## (python 3.6) contours, hierarchy = cv2.findContours(threshold, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+
             image, contours, hierarchy = cv2.findContours(
                 threshold, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
