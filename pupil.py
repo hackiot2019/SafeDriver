@@ -8,12 +8,11 @@ count = 0
 
 pygame.mixer.init()
 pygame.mixer.music.load("wakeMeUpChorus.mp3")
-pygame.mixer.music.play(-1)
 cap = cv2.VideoCapture(0)  # 640,480
 w = 640
 h = 480
 start = 0
-closed = False
+
 while(True):
     ret, frame = cap.read()
     if ret == True:
@@ -44,9 +43,11 @@ while(True):
             irises.append([np.float32(iris_w), np.float32(iris_h)])
 
         if (len(irises) < 2):
-            print(start)
+            #print(start)
+            if (start == 0):
+                pygame.mixer.music.play(-1)
             start += 1
-            if (start == 50):
+            if (start == 60):
                 pygame.mixer.music.unpause()
 
         else:
@@ -74,7 +75,7 @@ while(True):
             # now we find the biggest blob and get the centriod
 
             threshold = cv2.inRange(pupilFrame, 250, 255)  # get the blobs
-            contours, hierarchy = cv2.findContours(
+            image, contours, hierarchy = cv2.findContours(
                 threshold, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
             # if there are 3 or more blobs, delete the biggest and delete the left most for the right eye
@@ -88,7 +89,7 @@ while(True):
                 distanceX = []  # delete the left most (for right eye)
                 currentIndex = 0
                 for cnt in contours:
-                    area = cv2.contourArea(cnt)
+                    area = cv2.contourArea(cnt,True)
                     center = cv2.moments(cnt)
                     if (center['m00'] != 0):
                         cx, cy = int(center['m10']/center['m00']
