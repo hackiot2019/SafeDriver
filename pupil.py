@@ -1,8 +1,8 @@
-
 import numpy as np
 import cv2
 import time
 import pygame
+import datetime
 
 count = 0
 
@@ -12,7 +12,8 @@ pygame.mixer.music.play(-1)
 cap = cv2.VideoCapture(0)  # 640,480
 w = 640
 h = 480
-
+start = 0
+closed = False
 while(True):
     ret, frame = cap.read()
     if ret == True:
@@ -43,8 +44,13 @@ while(True):
             irises.append([np.float32(iris_w), np.float32(iris_h)])
 
         if (len(irises) < 2):
-            pygame.mixer.music.unpause()
+            print(start)
+            start += 1
+            if (start == 50):
+                pygame.mixer.music.unpause()
+
         else:
+            start = 0
             pygame.mixer.music.pause()
 
         # draw square
