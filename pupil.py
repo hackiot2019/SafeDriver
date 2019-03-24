@@ -3,11 +3,15 @@ import cv2
 import time
 import pygame
 import datetime
+import requests
 
 count = 0
 
 pygame.mixer.init()
 pygame.mixer.music.load("wakeMeUpChorus.mp3")
+pygame.mixer.music.play(-1)
+pygame.mixer.music.pause()
+
 cap = cv2.VideoCapture(0)  # 640,480
 w = 640
 h = 480
@@ -43,11 +47,11 @@ while(True):
             irises.append([np.float32(iris_w), np.float32(iris_h)])
 
         if (len(irises) < 2):
-            #print(start)
-            if (start == 0):
-                pygame.mixer.music.play(-1)
+            # print(start)
             start += 1
             if (start == 60):
+                requests.post(
+                    url="https://thawing-everglades-71893.herokuapp.com/user/count", data={"username": "duy"})
                 pygame.mixer.music.unpause()
 
         else:
@@ -75,9 +79,9 @@ while(True):
             # now we find the biggest blob and get the centriod
 
             threshold = cv2.inRange(pupilFrame, 250, 255)  # get the blobs
-            ## (python 3.6) contours, hierarchy = cv2.findContours(threshold, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
+            # (python 3.6) contours, hierarchy = cv2.findContours(threshold, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
-            image, contours, hierarchy = cv2.findContours(
+            contours, hierarchy = cv2.findContours(
                 threshold, cv2.RETR_LIST, cv2.CHAIN_APPROX_SIMPLE)
 
             # if there are 3 or more blobs, delete the biggest and delete the left most for the right eye
@@ -91,7 +95,7 @@ while(True):
                 distanceX = []  # delete the left most (for right eye)
                 currentIndex = 0
                 for cnt in contours:
-                    area = cv2.contourArea(cnt,True)
+                    area = cv2.contourArea(cnt, True)
                     center = cv2.moments(cnt)
                     if (center['m00'] != 0):
                         cx, cy = int(center['m10']/center['m00']
