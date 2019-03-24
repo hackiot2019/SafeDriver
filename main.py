@@ -9,10 +9,11 @@ import pygame
 def giveAnswer(image):
     return True
 
-def playSong():
-    pygame.mixer.init()
-    pygame.mixer.music.load("wakeMeUpChorus.mp3")
-    pygame.mixer.music.play()
+def playSong(a):
+    if(a):
+        pygame.mixer.music.unpause()
+    else:
+        pygame.mixer.music.pause()
 
 def crop(image_path, coords, saved_loc):
     image_obj = Image.fromarray(image_path)
@@ -24,12 +25,18 @@ def crop(image_path, coords, saved_loc):
 face_cascade = cv.CascadeClassifier('face.xml')
 eye_cascade = cv.CascadeClassifier('glass.xml')
 cap = cv.VideoCapture(0)
+pygame.mixer.init()
+pygame.mixer.music.load("wakeMeUpChorus.mp3")
+pygame.mixer.music.play()
+pygame.mixer.music.pause()
 
 while True:
     second = datetime.datetime.now().second;
     i = 0
     closed = 0
     while(datetime.datetime.now().second <= second + 1):
+        if(second == 59):
+            second = -1
         ret, img = cap.read()
         gray = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
         
@@ -42,9 +49,11 @@ while True:
                     crop(roi_gray, (ex, ey, ex+ew, ey+eh), 'data_data/pic' + str(i) + '.jpg')
                 if(giveAnswer('data_data/pic' + str(i) + '.jpg')):
                     closed+=1
-        i+=1
+        i+=2
     if(closed/i > 0.9):
         playSong()
+    else:
+        stopSong
 
     key = cv.waitKey(1) & 0xFF
     if key == ord('q'):
